@@ -5,6 +5,7 @@ import FilterBar from './components/FilterBar';
 import TodoList from './components/TodoList';
 import Stats from './components/Stats';
 import AnimatedBackground from './components/AnimatedBackground';
+import Footer from './components/Footer';
 import { todosAPI } from './api/storage';
 import './App.css';
 
@@ -152,6 +153,7 @@ function App() {
                     )}
                 </div>
             </main>
+            <Footer />
         </div>
     );
 }
