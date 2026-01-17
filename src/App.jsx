@@ -7,6 +7,7 @@ import Stats from './components/Stats';
 import AnimatedBackground from './components/AnimatedBackground';
 import Footer from './components/Footer';
 import { todosAPI } from './api/storage';
+import { checkDetails, sendNotification } from './utils/notifications';
 import './App.css';
 
 function App() {
@@ -20,6 +21,46 @@ function App() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [showStats, setShowStats] = useState(false);
+
+    // Request notification permission on load
+    useEffect(() => {
+        if (Notification.permission === 'default') {
+            checkDetails.requestPermission();
+        }
+    }, []);
+
+    // Check for due tasks every minute
+    useEffect(() => {
+        const checkDueTasks = () => {
+            const now = new Date();
+            todos.forEach(todo => {
+                if (!todo.completed && todo.dueDate && !todo.notified) {
+                    const due = new Date(todo.dueDate);
+                    const timeDiff = due - now;
+
+                    // Notify if due within notification window (e.g., just passed or due in 1 min)
+                    if (timeDiff <= 0 && timeDiff > -60000) {
+                        sendNotification(
+                            `Task Due: ${todo.title}`,
+                            `Time to finish: ${todo.title}!`
+                        );
+                        markAsNotified(todo.id);
+                    }
+                }
+            });
+        };
+
+        const interval = setInterval(checkDueTasks, 60000); // Check every minute
+        checkDueTasks(); // Initial check
+
+        return () => clearInterval(interval);
+    }, [todos]);
+
+    const markAsNotified = async (id) => {
+        setTodos(prev => prev.map(t =>
+            t.id === id ? { ...t, notified: true } : t
+        ));
+    };
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);

@@ -90,10 +90,10 @@ function TodoInput({ onAdd }) {
                         <div className="option-group">
                             <label>Due Date</label>
                             <input
-                                type="date"
+                                type="datetime-local"
                                 value={dueDate}
                                 onChange={(e) => setDueDate(e.target.value)}
-                                min={new Date().toISOString().split('T')[0]}
+                                min={new Date().toISOString().slice(0, 16)}
                             />
                         </div>
                     </div>
